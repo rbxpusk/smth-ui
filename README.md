@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# @puskevi/smth-ui
 
-## Getting Started
+Cool frontend components for starters or vibe coders that suck at ui.
 
-First, run the development server:
+30 dark-themed React components with inline styles and CSS custom properties. No Tailwind, no runtime deps — just React.
+
+## Install
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install @puskevi/smth-ui
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Usage
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```tsx
+import { Button, Card, toast, Toaster } from "@puskevi/smth-ui";
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+// Put once in your layout
+<Toaster />
 
-## Learn More
+// Use anywhere
+<Button color="#876cff">Click me</Button>
+toast.success("Done!");
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Theming
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+All components read CSS custom properties. Override them on any wrapper:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```css
+.my-section {
+  --surface:    #1c1a28;
+  --surface-lo: #131122;
+  --text:       #f0eeff;
+  --text-sub:   #7a7596;
+  --text-muted: #4a4660;
+  --radius:     12px;
+  --radius-sm:  7px;
+  --radius-lg:  17px;
+}
+```
 
-## Deploy on Vercel
+Pass `color` to override the accent on any component:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```tsx
+<Button color="#f43f5e">Danger-ish</Button>
+<Tabs color="#0ea5e9" tabs={...}>{...}</Tabs>
+<Pagination color="#22c55e" ... />
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Components
+
+Accordion, Alert, Avatar, AvatarGroup, Badge, Breadcrumb, Button, Card, CodeDisplay, DigitCounter, Divider, Drawer, DropdownMenu, EmptyState, Input, Textarea, Kbd, Modal, NumberInput, Pagination, Popover, Progress, Select, Skeleton, Spinner, StatCard, Table, Tabs, TagInput, Toast, Toggle, Checkbox, Radio, Tooltip
+
+## Requirements
+
+React 18+
