@@ -7,7 +7,7 @@ interface AvatarProps extends HTMLAttributes<HTMLDivElement> {
   src?:       string;
   size?:      AvatarSize;
   ring?:      boolean;
-  ringColor?: string;  // hex — overrides default purple ring
+  ringColor?: string;  // hex — overrides default ring color
   status?:    "online" | "offline" | "away" | "busy";
   color?:     string;
 }
@@ -21,10 +21,10 @@ const sizes = {
 };
 
 const statusColors = {
-  online:  { bg: "#4ade80", glow: "rgba(74,222,128,0.55)"   },
-  offline: { bg: "#3a3555", glow: "none"                    },
-  away:    { bg: "#fbbf24", glow: "rgba(251,191,36,0.45)"   },
-  busy:    { bg: "#f87171", glow: "rgba(248,113,113,0.45)"  },
+  online:  { bg: "#4ade80", glow: "rgba(74,222,128,0.55)"  },
+  offline: { bg: "rgba(255,255,255,0.18)", glow: "none"    },
+  away:    { bg: "#fbbf24", glow: "rgba(251,191,36,0.45)"  },
+  busy:    { bg: "#f87171", glow: "rgba(248,113,113,0.45)" },
 };
 
 // Deterministic color palette from name
@@ -76,14 +76,14 @@ export function Avatar({ name = "", src, size = "md", ring = false, ringColor, s
       {/* Ring */}
       {ring && (
         <div style={{
-          position:   "absolute",
-          inset:      "-3px",
+          position:     "absolute",
+          inset:        "-3px",
           borderRadius: "50%",
-          background: `conic-gradient(from 0deg, rgba(${rr},${rg},${rb},0.8), rgba(${rr},${rg},${rb},0.15), rgba(${Math.min(255,rr+40)},${Math.min(255,rg+40)},${Math.min(255,rb+20)},0.6), rgba(${rr},${rg},${rb},0.8))`,
-          padding:    "1.5px",
-          animation:  "avatar-ring-spin 6s linear infinite",
+          background:   `conic-gradient(from 0deg, rgba(${rr},${rg},${rb},0.8), rgba(${rr},${rg},${rb},0.15), rgba(${Math.min(255,rr+40)},${Math.min(255,rg+40)},${Math.min(255,rb+20)},0.6), rgba(${rr},${rg},${rb},0.8))`,
+          padding:      "1.5px",
+          animation:    "avatar-ring-spin 6s linear infinite",
         }}>
-          <div style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#08070d" }} />
+          <div style={{ width: "100%", height: "100%", borderRadius: "50%", background: "var(--bg, #0a0a0a)" }} />
         </div>
       )}
       <style>{`@keyframes avatar-ring-spin { to { transform: rotate(360deg); } }`}</style>
@@ -104,12 +104,12 @@ export function Avatar({ name = "", src, size = "md", ring = false, ringColor, s
       }}>
         {!src && (
           <span style={{
-            fontSize:    `${font}px`,
-            fontWeight:  900,
-            color:       color && isLight(color) ? "#111" : "#fff",
+            fontSize:      `${font}px`,
+            fontWeight:    900,
+            color:         color && isLight(color) ? "#111" : "#fff",
             letterSpacing: "-0.5px",
-            textShadow:  "0 1px 4px rgba(0,0,0,0.4)",
-            userSelect:  "none",
+            textShadow:    "0 1px 4px rgba(0,0,0,0.4)",
+            userSelect:    "none",
           }}>
             {getInitials(name)}
           </span>
@@ -126,7 +126,7 @@ export function Avatar({ name = "", src, size = "md", ring = false, ringColor, s
           height:       statusSz,
           borderRadius: "50%",
           background:   statusColors[status].bg,
-          border:       "2px solid #08070d",
+          border:       "2px solid var(--bg, #0a0a0a)",
           boxShadow:    statusColors[status].glow !== "none" ? `0 0 8px ${statusColors[status].glow}` : undefined,
         }} />
       )}
@@ -149,10 +149,10 @@ export function AvatarGroup({ names, max = 4, size = "sm", style, ...htmlProps }
     <div {...htmlProps} style={{ display: "flex", alignItems: "center", ...style }}>
       {visible.map((name, i) => (
         <div key={i} style={{
-          marginLeft: i === 0 ? 0 : `-${Math.round(sz * 0.28)}px`,
-          zIndex:     visible.length - i,
+          marginLeft:   i === 0 ? 0 : `-${Math.round(sz * 0.28)}px`,
+          zIndex:       visible.length - i,
           borderRadius: "50%",
-          boxShadow:  "0 0 0 2px #08070d",
+          boxShadow:    "0 0 0 2px var(--bg, #0a0a0a)",
         }}>
           <Avatar name={name} size={size} />
         </div>
@@ -163,8 +163,8 @@ export function AvatarGroup({ names, max = 4, size = "sm", style, ...htmlProps }
           width:          sz,
           height:         sz,
           borderRadius:   "50%",
-          background:     "linear-gradient(170deg, #1e1c2c 0%, #131020 100%)",
-          border:         "2px solid #08070d",
+          background:     "linear-gradient(170deg, var(--surface-hi, rgba(255,255,255,0.07)) 0%, var(--surface-lo, rgba(0,0,0,0.3)) 100%)",
+          border:         "2px solid var(--bg, #0a0a0a)",
           boxShadow:      "0 0 0 1px rgba(255,255,255,0.08)",
           display:        "flex",
           alignItems:     "center",

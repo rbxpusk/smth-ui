@@ -1,10 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 
 interface CodeDisplayProps {
-  code:   string;
-  label?: string;
-  color?: string;
+  code:       string;
+  label?:     string;
+  color?:     string;
+  maxWidth?:  string | number;
+  style?:     CSSProperties;
 }
 
 function hexToRgb(hex: string): string {
@@ -15,9 +17,9 @@ function hexToRgb(hex: string): string {
   return `${r},${g},${b}`;
 }
 
-export function CodeDisplay({ code, label, color = "#876cff" }: CodeDisplayProps) {
-  const [copied, setCopied]       = useState(false);
-  const [hoverBtn, setHoverBtn]   = useState(false);
+export function CodeDisplay({ code, label, color = "#876cff", maxWidth, style }: CodeDisplayProps) {
+  const [copied, setCopied]     = useState(false);
+  const [hoverBtn, setHoverBtn] = useState(false);
 
   const rgb = hexToRgb(color);
 
@@ -29,7 +31,7 @@ export function CodeDisplay({ code, label, color = "#876cff" }: CodeDisplayProps
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxWidth, ...style }}>
       {label && (
         <span style={{
           fontSize:      "11px",
@@ -42,15 +44,14 @@ export function CodeDisplay({ code, label, color = "#876cff" }: CodeDisplayProps
         </span>
       )}
       <div style={{
-        display:        "flex",
-        alignItems:     "center",
-        gap:            "0",
-        borderRadius:   "12px",
-        border:         `1px solid rgba(${rgb},0.28)`,
-        background:     "linear-gradient(170deg, #141220 0%, #0f0d1a 100%)",
-        boxShadow:      `0 0 0 1px rgba(255,255,255,0.03) inset, 0 4px 20px rgba(0,0,0,0.4), 0 0 30px rgba(${rgb},0.06)`,
-        overflow:       "hidden",
-        position:       "relative",
+        display:      "flex",
+        alignItems:   "center",
+        borderRadius: "12px",
+        border:       `1px solid rgba(${rgb},0.28)`,
+        background:   "linear-gradient(170deg, var(--surface-hi, rgba(255,255,255,0.07)) 0%, var(--surface, rgba(255,255,255,0.04)) 100%)",
+        boxShadow:    `0 0 0 1px rgba(255,255,255,0.03) inset, 0 4px 20px rgba(0,0,0,0.4), 0 0 30px rgba(${rgb},0.06)`,
+        overflow:     "hidden",
+        position:     "relative",
       }}>
         {/* Left accent bar */}
         <div style={{
@@ -70,9 +71,9 @@ export function CodeDisplay({ code, label, color = "#876cff" }: CodeDisplayProps
           userSelect:    "all",
           textShadow:    `0 0 24px rgba(${rgb},0.4)`,
           whiteSpace:    "nowrap",
-          overflow:      "hidden",
-          textOverflow:  "ellipsis",
-        }}>
+          overflowX:     "auto",
+          scrollbarWidth: "none",
+        } as CSSProperties}>
           {code}
         </span>
         <button
@@ -80,6 +81,7 @@ export function CodeDisplay({ code, label, color = "#876cff" }: CodeDisplayProps
           onMouseEnter={() => setHoverBtn(true)}
           onMouseLeave={() => setHoverBtn(false)}
           title={copied ? "Copied!" : "Copy to clipboard"}
+          aria-label={copied ? "Copied!" : "Copy to clipboard"}
           style={{
             display:        "flex",
             alignItems:     "center",
@@ -88,9 +90,7 @@ export function CodeDisplay({ code, label, color = "#876cff" }: CodeDisplayProps
             height:         "48px",
             border:         "none",
             borderLeft:     `1px solid rgba(${rgb},0.15)`,
-            background:     hoverBtn
-              ? `rgba(${rgb},0.12)`
-              : "transparent",
+            background:     hoverBtn ? `rgba(${rgb},0.12)` : "transparent",
             color:          copied ? "#4ade80" : color,
             cursor:         "pointer",
             flexShrink:     0,
