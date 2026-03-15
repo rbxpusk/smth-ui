@@ -34,14 +34,20 @@ urosh-ui/
   "version": "0.1.0",
   "description": "cool frontend components for starters or vibe coders that suck at ui",
   "license": "MIT",
+  "keywords": ["react", "components", "ui", "dark-theme", "typescript"],
+  "homepage": "https://github.com/puskevit/smth-ui",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/puskevit/smth-ui"
+  },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs"
     }
   },
   "files": ["dist"],
@@ -55,6 +61,10 @@ urosh-ui/
     "build:lib": "tsup",
     "build": "next build",
     "prepublishOnly": "tsup"
+  },
+  "devDependencies": {
+    "tsup": "^8",
+    "typescript": "^5"
   }
 }
 ```
@@ -62,30 +72,39 @@ urosh-ui/
 ## tsup.config.ts
 
 ```ts
-export default {
+import { defineConfig } from "tsup";
+
+export default defineConfig({
   entry: ["lib/index.ts"],
   format: ["esm", "cjs"],
   dts: true,
   splitting: false,
   clean: true,
   external: ["react", "react-dom"],
-};
+  banner: { js: '"use client";' },
+});
 ```
+
+### Note on `"use client"`
+
+All 30 components are client components (19 carry the directive explicitly; the remaining 11 are presentational and compatible). Since tsup bundles everything into a single output file, esbuild does not reliably propagate per-file `"use client"` directives. The `banner` option emits `"use client";` at the top of both ESM and CJS output files, which is the standard approach used by Radix UI, shadcn, and similar libraries.
 
 ## lib/index.ts
 
-Barrel file re-exporting all named exports from every component file:
+Barrel file re-exporting all named exports from every component file. Key multi-export files:
 
-- All components export named exports (e.g. `Button`, `Badge`, `Card`, etc.)
-- Toast exports both `toast` (function) and `Toaster` (component)
-- Toggle exports `Toggle`, `Checkbox`, `Radio`
-- Avatar exports `Avatar`, `AvatarGroup`
-- Input exports `Input`, `Textarea`
+- `Toast` → exports `toast` (function) and `Toaster` (component)
+- `Toggle` → exports `Toggle`, `Checkbox`, `Radio`
+- `Avatar` → exports `Avatar`, `AvatarGroup`
+- `Input` → exports `Input`, `Textarea`
+- `Table` → exports `Table` and `TableColumn` (type)
+
+Path alias note: `lib/index.ts` uses relative imports (`"../components/Button"` etc.), not the Next.js `@/` alias, so no tsup path alias config is needed.
 
 ## Cleanup
 
-- Remove "urosh" from all user-facing strings (export CSS comment in playground, package name)
 - Remove `"private": true` from package.json
+- Strip all references to "urosh" from user-facing strings (playground export CSS comment, any metadata)
 - Add `dist/` to `.gitignore`
 
 ## Consumer Usage
@@ -110,4 +129,3 @@ toast.success("Done!");
 - The `components/` source files are unchanged
 - The Next.js playground (`app/`) is unchanged
 - No Tailwind at runtime — consumers need zero config
-- `"use client"` directives are preserved (tsup passes them through)
