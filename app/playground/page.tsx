@@ -165,6 +165,7 @@ export default function PlaygroundPage() {
       --radius:      ${theme.radius}px;
       --radius-sm:   ${Math.round(theme.radius * 0.55)}px;
       --radius-lg:   ${Math.round(theme.radius * 1.4)}px;
+      --surface-hi:  color-mix(in srgb, ${theme.surface} 60%, ${theme.text} 40%);
       color:         ${theme.text};
     }
   `;

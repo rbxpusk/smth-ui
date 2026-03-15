@@ -1,6 +1,6 @@
 {
   "name": "@puskevi/smth-ui",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "cool frontend components for starters or vibe coders that suck at ui",
   "license": "MIT",
   "keywords": ["react", "components", "ui", "dark-theme", "typescript"],
