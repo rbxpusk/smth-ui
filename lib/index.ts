@@ -15,6 +15,8 @@ export { EmptyState }                                          from "../componen
 export { Input, Textarea }                                     from "../components/Input";
 export { Kbd }                                                 from "../components/Kbd";
 export { Modal }                                               from "../components/Modal";
+export { Notifications }                                       from "../components/Notifications";
+export type { NotificationItem }                               from "../components/Notifications";
 export { NumberInput }                                         from "../components/NumberInput";
 export { Pagination }                                          from "../components/Pagination";
 export { Popover }                                             from "../components/Popover";

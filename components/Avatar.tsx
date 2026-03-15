@@ -1,15 +1,14 @@
-import { type CSSProperties } from "react";
+import { type CSSProperties, type HTMLAttributes } from "react";
 
 type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl";
 
-interface AvatarProps {
+interface AvatarProps extends HTMLAttributes<HTMLDivElement> {
   name?:      string;
   src?:       string;
   size?:      AvatarSize;
   ring?:      boolean;
   ringColor?: string;  // hex — overrides default purple ring
   status?:    "online" | "offline" | "away" | "busy";
-  style?:     CSSProperties;
   color?:     string;
 }
 
@@ -65,7 +64,7 @@ function isLight(hex: string) {
   return (0.299*r + 0.587*g + 0.114*b) / 255 > 0.6;
 }
 
-export function Avatar({ name = "", src, size = "md", ring = false, ringColor, status, style, color }: AvatarProps) {
+export function Avatar({ name = "", src, size = "md", ring = false, ringColor, status, style, color, ...rest }: AvatarProps) {
   const { sz, font } = sizes[size];
   const statusSz = Math.max(8, Math.round(sz * 0.22));
   const bg       = color ? color : src ? undefined : getGradient(name);
@@ -73,7 +72,7 @@ export function Avatar({ name = "", src, size = "md", ring = false, ringColor, s
   const [rr,rg,rb] = hexToRgbAvatar(rc);
 
   return (
-    <div style={{ position: "relative", flexShrink: 0, width: sz, height: sz, ...style }}>
+    <div {...rest} style={{ position: "relative", flexShrink: 0, width: sz, height: sz, ...style }}>
       {/* Ring */}
       {ring && (
         <div style={{
@@ -135,19 +134,19 @@ export function Avatar({ name = "", src, size = "md", ring = false, ringColor, s
   );
 }
 
-interface AvatarGroupProps {
+interface AvatarGroupProps extends HTMLAttributes<HTMLDivElement> {
   names: string[];
   max?:  number;
   size?: AvatarSize;
 }
 
-export function AvatarGroup({ names, max = 4, size = "sm" }: AvatarGroupProps) {
+export function AvatarGroup({ names, max = 4, size = "sm", style, ...htmlProps }: AvatarGroupProps) {
   const { sz } = sizes[size];
   const visible = names.slice(0, max);
   const rest    = names.length - max;
 
   return (
-    <div style={{ display: "flex", alignItems: "center" }}>
+    <div {...htmlProps} style={{ display: "flex", alignItems: "center", ...style }}>
       {visible.map((name, i) => (
         <div key={i} style={{
           marginLeft: i === 0 ? 0 : `-${Math.round(sz * 0.28)}px`,
