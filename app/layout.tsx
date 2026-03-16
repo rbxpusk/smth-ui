@@ -7,7 +7,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Urosh UI — Component Library",
+  title: "smth UI — Component Library",
   description: "Dark material design system built on #876cff",
 };
 
