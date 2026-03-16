@@ -9,6 +9,9 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 export const metadata: Metadata = {
   title: "smth UI — Component Library",
   description: "Dark material design system built on #876cff",
+  icons: {
+    icon: "/download.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
