@@ -150,7 +150,7 @@ export function Notifications({
         width:        "340px",
         borderRadius: "var(--radius-lg, 14px)",
         overflow:     "hidden",
-        background:   "linear-gradient(170deg, var(--surface-hi, #1c1c1c) 0%, var(--surface, #111111) 100%)",
+        background:   "linear-gradient(170deg, var(--surface-hi, var(--surface, #111)) 0%, var(--surface, #111) 100%)",
         boxShadow:    "0 0 0 1px rgba(255,255,255,0.09), 0 -1px 0 rgba(0,0,0,0.4) inset, 0 24px 60px rgba(0,0,0,0.75), 0 8px 24px rgba(0,0,0,0.5)",
         animation:    `smth-notif-${dir} 0.18s cubic-bezier(0.22,1,0.36,1) both`,
       }}

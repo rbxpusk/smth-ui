@@ -34,3 +34,13 @@ export { toast, Toaster, ToastProvider, useToast }             from "../componen
 export type { ToastOptions }                                   from "../components/Toast";
 export { Toggle, Checkbox, Radio }                             from "../components/Toggle";
 export { Tooltip }                                             from "../components/Tooltip";
+
+// ── New components ──────────────────────────────────────────────────────────
+export { Banner }                                              from "../components/Banner";
+export { ColorPicker }                                         from "../components/ColorPicker";
+export { Combobox }                                            from "../components/Combobox";
+export type { ComboboxOption }                                 from "../components/Combobox";
+export { Sheet }                                               from "../components/Sheet";
+export { Slider }                                              from "../components/Slider";
+export { Stepper }                                             from "../components/Stepper";
+export { Timeline }                                            from "../components/Timeline";

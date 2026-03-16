@@ -103,7 +103,7 @@ function ToastItem({ item, onDismiss }: { item: ToastItem; onDismiss: (id: strin
         gap:          "12px",
         padding:      "14px 16px 14px 19px",
         borderRadius: "var(--radius, 14px)",
-        background:   "linear-gradient(170deg, var(--surface-hi, #1c1c1c) 0%, var(--surface, #111111) 100%)",
+        background:   "linear-gradient(170deg, var(--surface-hi, var(--surface, #111)) 0%, var(--surface, #111) 100%)",
         boxShadow: [
           `0 0 0 1px ${cfg.border}`,
           "0 2px 0 rgba(255,255,255,0.04) inset",
@@ -177,7 +177,7 @@ export function Toaster() {
   if (toasts.length === 0) return null;
 
   return (
-    <div style={{
+    <div aria-live="polite" role="status" style={{
       position:      "fixed",
       bottom:        "24px",
       right:         "24px",

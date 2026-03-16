@@ -54,8 +54,8 @@ function DigitTile({ digit, color, delay, isIcon = false, iconNode }: DigitTileP
     <div style={{
       width:          "52px",
       height:         "64px",
-      borderRadius:   "12px",
-      background:     `linear-gradient(180deg, #1a1828 0%, #111020 100%)`,
+      borderRadius:   "var(--radius, 12px)",
+      background:     `linear-gradient(180deg, var(--surface-hi, var(--surface, #111)) 0%, var(--surface, #111) 100%)`,
       border:         `1px solid rgba(${rgb},0.28)`,
       boxShadow:      `0 0 0 1px rgba(255,255,255,0.04) inset, 0 4px 16px rgba(0,0,0,0.5), 0 0 20px rgba(${rgb},0.08)`,
       display:        "flex",

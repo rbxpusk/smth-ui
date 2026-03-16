@@ -29,6 +29,13 @@ import { Kbd }                      from "@/components/Kbd";
 import { EmptyState }               from "@/components/EmptyState";
 import { Table, type TableColumn }  from "@/components/Table";
 import { toast }                    from "@/components/Toast";
+import { Slider }                   from "@/components/Slider";
+import { Combobox }                 from "@/components/Combobox";
+import { Banner }                   from "@/components/Banner";
+import { Timeline }                 from "@/components/Timeline";
+import { Stepper }                  from "@/components/Stepper";
+import { Sheet }                    from "@/components/Sheet";
+import { ColorPicker }              from "@/components/ColorPicker";
 
 // ─── Theme ────────────────────────────────────────────────────────────────────
 
@@ -112,6 +119,11 @@ export default function PlaygroundPage() {
   const [page, setPage]             = useState(3);
   const [modalOpen, setModalOpen]   = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [sheetOpen, setSheetOpen]   = useState(false);
+  const [sliderVal, setSliderVal]   = useState(50);
+  const [comboVal, setComboVal]     = useState("");
+  const [stepperStep, setStepperStep] = useState(1);
+  const [pickerColor, setPickerColor] = useState("#876cff");
 
   const set = useCallback((key: keyof Theme, value: unknown) => {
     setTheme(t => ({ ...t, [key]: value }));
@@ -719,6 +731,90 @@ export default function PlaygroundPage() {
               message="When someone sends you a message it will appear here."
               action={<Button color={theme.primary} size="sm" style={{ borderRadius: btnRadius }}>Start a conversation</Button>}
             />
+          </Sec>
+
+          <Sec title="Slider" muted={theme.textMuted}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px", maxWidth: "360px" }}>
+              <Slider value={sliderVal} onChange={setSliderVal} label="Volume" showValue color={theme.primary} />
+              <Slider value={70} onChange={() => {}} label="Disabled" disabled />
+            </div>
+          </Sec>
+
+          <Sec title="Combobox" muted={theme.textMuted}>
+            <div style={{ maxWidth: "300px" }}>
+              <Combobox
+                label="Framework"
+                placeholder="Search…"
+                value={comboVal}
+                onChange={setComboVal}
+                color={theme.primary}
+                options={[
+                  { value: "next", label: "Next.js" },
+                  { value: "remix", label: "Remix" },
+                  { value: "astro", label: "Astro" },
+                  { value: "svelte", label: "SvelteKit" },
+                  { value: "nuxt", label: "Nuxt" },
+                ]}
+              />
+            </div>
+          </Sec>
+
+          <Sec title="Banner" muted={theme.textMuted}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <Banner variant="info" dismissible>New version available.</Banner>
+              <Banner variant="success">Deployment complete.</Banner>
+              <Banner variant="warning">Trial expires soon.</Banner>
+              <Banner variant="error" action={<Button size="xs" variant="ghost" style={{ borderRadius: btnRadius }}>Retry</Button>}>Sync failed.</Banner>
+            </div>
+          </Sec>
+
+          <Sec title="Timeline" muted={theme.textMuted}>
+            <Timeline
+              color={theme.primary}
+              items={[
+                { id: "1", title: "Step 1", description: "First step in the process.", time: "Day 1" },
+                { id: "2", title: "Step 2", description: "Second step progressing.",   time: "Day 3" },
+                { id: "3", title: "Step 3", description: "Final step — all done.",     time: "Day 5" },
+              ]}
+            />
+          </Sec>
+
+          <Sec title="Stepper" muted={theme.textMuted}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              <Stepper
+                activeStep={stepperStep}
+                color={theme.primary}
+                steps={[
+                  { id: "1", label: "Account" },
+                  { id: "2", label: "Profile" },
+                  { id: "3", label: "Done" },
+                ]}
+              />
+              <div style={{ display: "flex", gap: "6px" }}>
+                <Button size="xs" variant="secondary" style={{ borderRadius: btnRadius }} onClick={() => setStepperStep(s => Math.max(0, s - 1))}>Back</Button>
+                <Button size="xs" color={theme.primary} style={{ borderRadius: btnRadius }} onClick={() => setStepperStep(s => Math.min(2, s + 1))}>Next</Button>
+              </div>
+            </div>
+          </Sec>
+
+          <Sec title="Sheet" muted={theme.textMuted}>
+            <Button variant="secondary" size="sm" style={{ borderRadius: btnRadius }} onClick={() => setSheetOpen(true)}>Open sheet</Button>
+            <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)} title="Quick actions" footer={
+              <>
+                <Button variant="ghost" size="sm" style={{ borderRadius: btnRadius }} onClick={() => setSheetOpen(false)}>Cancel</Button>
+                <Button size="sm" color={theme.primary} style={{ borderRadius: btnRadius }} onClick={() => { toast.success("Done!"); setSheetOpen(false); }}>Confirm</Button>
+              </>
+            }>
+              <p style={{ fontSize: "14px", color: theme.textSub, lineHeight: 1.7 }}>
+                Bottom sheet overlay for mobile-friendly actions.
+              </p>
+            </Sheet>
+          </Sec>
+
+          <Sec title="Color Picker" muted={theme.textMuted}>
+            <div style={{ maxWidth: "200px" }}>
+              <ColorPicker label="Accent" value={pickerColor} onChange={setPickerColor} />
+            </div>
           </Sec>
 
         </div>

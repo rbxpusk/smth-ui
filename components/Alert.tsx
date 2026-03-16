@@ -1,5 +1,6 @@
 "use client";
 import { type ReactNode, type CSSProperties, type HTMLAttributes, useState } from "react";
+import { safeHex, hexToRgbString } from "@/lib/color";
 
 type AlertVariant = "success" | "error" | "warning" | "info" | "neutral";
 
@@ -11,14 +12,6 @@ interface AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, "title"> {
   dismissible?: boolean;
   onDismiss?:   () => void;
   color?:    string;
-}
-
-function hexToRgb(hex: string): string {
-  const h = hex.replace("#", "");
-  const r = parseInt(h.substring(0, 2), 16);
-  const g = parseInt(h.substring(2, 4), 16);
-  const b = parseInt(h.substring(4, 6), 16);
-  return `${r},${g},${b}`;
 }
 
 const variantMap: Record<AlertVariant, { color: string; rgb: string; icon: ReactNode }> = {
@@ -93,13 +86,15 @@ export function Alert({
 
   if (dismissed) return null;
 
+  const validColor = safeHex(color ?? variantMap[variant].color);
+
   let accentColor: string;
   let rgb: string;
   let defaultIcon: ReactNode;
 
   if (color) {
-    accentColor  = color;
-    rgb          = hexToRgb(color);
+    accentColor  = validColor;
+    rgb          = hexToRgbString(validColor);
     defaultIcon  = variantMap.info.icon;
   } else {
     const v      = variantMap[variant];
@@ -114,7 +109,7 @@ export function Alert({
   }
 
   return (
-    <div {...rest} style={{
+    <div role="alert" {...rest} style={{
       display:      "flex",
       alignItems:   "flex-start",
       gap:          "0",
@@ -175,6 +170,7 @@ export function Alert({
       {/* Dismiss button */}
       {dismissible && (
         <button
+          aria-label="Close"
           onClick={handleDismiss}
           onMouseEnter={() => setHoverDismiss(true)}
           onMouseLeave={() => setHoverDismiss(false)}

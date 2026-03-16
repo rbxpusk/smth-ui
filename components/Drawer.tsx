@@ -1,5 +1,6 @@
 "use client";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
+import { safeHex } from "@/lib/color";
 
 const NOISE = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
 
@@ -17,18 +18,56 @@ export function Drawer({
   open, onClose, title, side = "right", width = "400px", children, footer,
 }: DrawerProps) {
   const [closing, setClosing] = useState(false);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     if (!open) return;
     setClosing(false);
+
+    // Body scroll lock
+    document.body.style.overflow = "hidden";
+
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") handleClose(); };
     window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handler);
+    };
   }, [open]);
+
+  // Focus trap
+  useEffect(() => {
+    if (!open || !drawerRef.current) return;
+    const drawer = drawerRef.current;
+    const focusable = drawer.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    first.focus();
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key !== "Tab") return;
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    }
+    drawer.addEventListener("keydown", onKeyDown);
+    return () => drawer.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
+  // Cleanup close timer on unmount
+  useEffect(() => {
+    return () => { clearTimeout(closeTimerRef.current); };
+  }, []);
 
   function handleClose() {
     setClosing(true);
-    setTimeout(() => { setClosing(false); onClose(); }, 220);
+    closeTimerRef.current = setTimeout(() => { setClosing(false); onClose(); }, 220);
   }
 
   if (!open) return null;
@@ -38,10 +77,13 @@ export function Drawer({
 
   return (
     <div
+      ref={drawerRef}
+      role="dialog"
+      aria-modal="true"
       onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
       style={{
         position:         "fixed", inset: 0, zIndex: 300,
-        background:       "rgba(4,3,9,0.7)",
+        background:       "color-mix(in srgb, var(--bg, #08070d) 85%, transparent)",
         backdropFilter:   "blur(8px)",
         WebkitBackdropFilter: "blur(8px)",
         animation:        closing ? "modal-bg-out 0.22s ease both" : "modal-bg-in 0.2s ease both",
@@ -67,7 +109,7 @@ export function Drawer({
         display:    "flex",
         flexDirection: "column",
         overflow:   "hidden",
-        background: "linear-gradient(180deg, #1e1c2e 0%, #131122 100%)",
+        background: "linear-gradient(180deg, var(--surface-hi, var(--surface, #111)) 0%, var(--surface, #111) 60%, var(--surface-lo, var(--bg, #0a0a0a)) 100%)",
         boxShadow:  side === "right"
           ? "-1px 0 0 rgba(255,255,255,0.07), -20px 0 60px rgba(0,0,0,0.6)"
           : "1px 0 0 rgba(255,255,255,0.07), 20px 0 60px rgba(0,0,0,0.6)",
@@ -124,12 +166,13 @@ function DrawerCloseBtn({ onClick }: { onClick: () => void }) {
   const [hovered, setHovered] = useState(false);
   return (
     <button
+      aria-label="Close drawer"
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
         width: "30px", height: "30px", borderRadius: "8px",
-        background: hovered ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.06)",
+        background: hovered ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.04)",
         border: "1px solid rgba(255,255,255,0.08)",
         color: hovered ? "var(--text)" : "var(--text-sub)",
         cursor: "pointer",

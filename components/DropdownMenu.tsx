@@ -41,7 +41,7 @@ export function DropdownMenu({ trigger, items, onSelect, align = "left" }: Dropd
     const below = window.innerHeight - rect.bottom;
     const goUp  = below < estH + 16 && rect.top > estH + 16;
 
-    const s: CSSProperties = { position: "fixed", zIndex: 9999 };
+    const s: CSSProperties = { position: "fixed", zIndex: 1100 };
     if (goUp) {
       s.bottom = window.innerHeight - rect.top + 6;
     } else {
@@ -89,7 +89,7 @@ export function DropdownMenu({ trigger, items, onSelect, align = "left" }: Dropd
         minWidth:     "200px",
         borderRadius: "var(--radius, 14px)",
         overflow:     "hidden",
-        background:   "linear-gradient(170deg, var(--surface-hi, #1c1c1c) 0%, var(--surface, #111111) 100%)",
+        background:   "linear-gradient(170deg, var(--surface-hi, var(--surface, #111)) 0%, var(--surface, #111) 100%)",
         boxShadow:    "0 0 0 1px rgba(255,255,255,0.1), 0 2px 0 rgba(255,255,255,0.06) inset, 0 -1px 0 rgba(0,0,0,0.5) inset, 0 16px 48px rgba(0,0,0,0.7), 0 4px 16px rgba(0,0,0,0.5)",
         animation:    `smth-menu-${dir} 0.16s cubic-bezier(0.22,1,0.36,1) both`,
       }}
@@ -122,7 +122,18 @@ export function DropdownMenu({ trigger, items, onSelect, align = "left" }: Dropd
 
   return (
     <div ref={triggerRef} style={{ position: "relative", display: "inline-flex" }}>
-      <div onClick={openMenu} style={{ cursor: "pointer" }}>
+      <div
+        onClick={openMenu}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openMenu();
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        style={{ cursor: "pointer" }}
+      >
         {trigger}
       </div>
       {mounted && menuNode ? createPortal(menuNode, document.body) : null}
@@ -146,7 +157,7 @@ function MenuRow({ item, onSelect }: { item: MenuItem; onSelect: () => void }) {
         padding:        "8px 10px",
         borderRadius:   "var(--radius-sm, 9px)",
         background:     hovered && !item.disabled
-          ? item.danger ? "rgba(248,113,113,0.1)" : "rgba(255,255,255,0.07)"
+          ? item.danger ? "rgba(248,113,113,0.08)" : "rgba(255,255,255,0.05)"
           : "transparent",
         border:         "none",
         cursor:         item.disabled ? "not-allowed" : "pointer",

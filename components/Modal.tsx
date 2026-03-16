@@ -1,5 +1,6 @@
 "use client";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
+import { safeHex, hexToRgb } from "@/lib/color";
 
 const NOISE = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
 
@@ -17,29 +18,64 @@ interface ModalProps {
 
 const modalWidths = { sm: "400px", md: "520px", lg: "680px" };
 
-function hexToRgb(hex: string) {
-  const h = hex.replace("#", "");
-  return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
-}
-
 export function Modal({
   open, onClose, title, subtitle, children, footer,
   size = "md", icon, iconColor = "#876cff",
 }: ModalProps) {
   const [closing, setClosing] = useState(false);
-  const [r,g,b] = hexToRgb(iconColor);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const validIconColor = safeHex(iconColor);
+  const [r,g,b] = hexToRgb(validIconColor);
 
   useEffect(() => {
     if (!open) return;
     setClosing(false);
+
+    // Body scroll lock
+    document.body.style.overflow = "hidden";
+
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") handleClose(); };
     window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handler);
+    };
   }, [open]);
+
+  // Focus trap
+  useEffect(() => {
+    if (!open || !modalRef.current) return;
+    const modal = modalRef.current;
+    const focusable = modal.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    first.focus();
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key !== "Tab") return;
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    }
+    modal.addEventListener("keydown", onKeyDown);
+    return () => modal.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
+  // Cleanup close timer on unmount
+  useEffect(() => {
+    return () => { clearTimeout(closeTimerRef.current); };
+  }, []);
 
   function handleClose() {
     setClosing(true);
-    setTimeout(() => { setClosing(false); onClose(); }, 180);
+    closeTimerRef.current = setTimeout(() => { setClosing(false); onClose(); }, 180);
   }
 
   if (!open) return null;
@@ -48,12 +84,15 @@ export function Modal({
 
   return (
     <div
+      ref={modalRef}
+      role="dialog"
+      aria-modal="true"
       onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
       style={{
         position:             "fixed", inset: 0, zIndex: 1000,
         display:              "flex", alignItems: "center", justifyContent: "center",
         padding:              "20px",
-        background:           "rgba(4,3,9,0.75)",
+        background:           "color-mix(in srgb, var(--bg, #08070d) 85%, transparent)",
         backdropFilter:       "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
         animation:            closing ? "mbg-out 0.18s ease both" : "mbg-in 0.2s ease both",
@@ -72,7 +111,7 @@ export function Modal({
         width:      "100%",
         maxWidth:   modalWidths[size],
         borderRadius: "var(--radius-lg, 24px)",
-        background: "linear-gradient(175deg, var(--surface-hi, #1c1c1c) 0%, var(--surface, #111111) 60%, var(--surface-lo, #0a0a0a) 100%)",
+        background: "linear-gradient(175deg, var(--surface-hi, var(--surface, #111)) 0%, var(--surface, #111) 60%, var(--surface-lo, var(--bg, #0a0a0a)) 100%)",
         boxShadow: [
           "0 0 0 1px rgba(255,255,255,0.1)",
           "0 2px 0 rgba(255,255,255,0.07) inset",
@@ -227,6 +266,7 @@ function ModalCloseButton({ onClick }: { onClick: () => void }) {
   const [hovered, setHovered] = useState(false);
   return (
     <button
+      aria-label="Close"
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -235,7 +275,7 @@ function ModalCloseButton({ onClick }: { onClick: () => void }) {
         height:         "30px",
         borderRadius:   "9px",
         flexShrink:     0,
-        background:     hovered ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.06)",
+        background:     hovered ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.04)",
         border:         "1px solid rgba(255,255,255,0.08)",
         color:          hovered ? "var(--text)" : "var(--text-muted)",
         cursor:         "pointer",

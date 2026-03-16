@@ -1,5 +1,6 @@
 "use client";
-import { type ReactNode, type ButtonHTMLAttributes, useState } from "react";
+import React, { type ReactNode, type ButtonHTMLAttributes, useState } from "react";
+import { safeHex, parseHex, lighten, darken, isLight } from "@/lib/color";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger" | "outline";
 type Size    = "xs" | "sm" | "md" | "lg" | "xl";
@@ -23,30 +24,6 @@ const sizes: Record<Size, { padding: string; fontSize: string; height: string; g
   xl: { padding: "0 40px",  fontSize: "16px", height: "58px", gap: "9px",  radius: "var(--radius, 15px)" },
 };
 
-function parseHex(hex: string) {
-  const h = hex.replace("#", "");
-  return {
-    r: parseInt(h.slice(0,2), 16),
-    g: parseInt(h.slice(2,4), 16),
-    b: parseInt(h.slice(4,6), 16),
-  };
-}
-
-function lighten(hex: string, amt = 40) {
-  const { r, g, b } = parseHex(hex);
-  return `rgb(${Math.min(255,r+amt)},${Math.min(255,g+amt)},${Math.min(255,b+amt)})`;
-}
-
-function darken(hex: string, amt = 30) {
-  const { r, g, b } = parseHex(hex);
-  return `rgb(${Math.max(0,r-amt)},${Math.max(0,g-amt)},${Math.max(0,b-amt)})`;
-}
-
-function isLight(hex: string) {
-  const { r, g, b } = parseHex(hex);
-  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.6;
-}
-
 function buildPrimaryStyle(color: string, hovered: boolean, pressed: boolean) {
   const { r, g, b } = parseHex(color);
   const light = lighten(color, 38);
@@ -56,17 +33,17 @@ function buildPrimaryStyle(color: string, hovered: boolean, pressed: boolean) {
     color:      isLight(color) ? "#111" : "#fff",
     border:     "none",
     boxShadow: [
-      "0 1px 0 rgba(255,255,255,0.24) inset",
-      "0 -1px 0 rgba(0,0,0,0.28) inset",
-      `0 8px 28px rgba(${r},${g},${b},0.42)`,
-      `0 2px 8px  rgba(${r},${g},${b},0.28)`,
+      "0 1px 0 rgba(255,255,255,0.15) inset",
+      "0 -1px 0 rgba(0,0,0,0.25) inset",
+      `0 6px 20px rgba(${r},${g},${b},0.35)`,
+      `0 2px 6px  rgba(${r},${g},${b},0.22)`,
     ].join(", "),
-    filter:    hovered && !pressed ? "brightness(1.1)"  : pressed ? "brightness(0.92)" : undefined,
+    filter:    hovered && !pressed ? "brightness(1.06)"  : pressed ? "brightness(0.93)" : undefined,
     transform: pressed ? "translateY(1px) scale(0.98)" : hovered ? "translateY(-1px)" : "translateY(0)",
   } as React.CSSProperties;
 }
 
-export function Button({
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button({
   variant   = "primary",
   size      = "md",
   loading   = false,
@@ -79,14 +56,15 @@ export function Button({
   children,
   style,
   ...props
-}: ButtonProps) {
+}, ref) {
   const s          = sizes[size];
   const isDisabled = disabled || loading;
   const [hovered, setHovered]   = useState(false);
   const [pressed, setPressed]   = useState(false);
+  const [focused, setFocused]   = useState(false);
   const radius = pill ? "999px" : s.radius;
 
-  const primaryColor = color ?? "#876cff";
+  const primaryColor = safeHex(color ?? "#876cff");
 
   /* ── Per-variant base + hover/press styles ─────────────────────────────── */
   let variantStyle: React.CSSProperties;
@@ -96,16 +74,16 @@ export function Button({
   } else if (variant === "secondary") {
     variantStyle = {
       background: hovered
-        ? "linear-gradient(180deg, rgba(255,255,255,0.11) 0%, rgba(255,255,255,0.07) 100%)"
-        : "linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%)",
+        ? "linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.05) 100%)"
+        : "linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.03) 100%)",
       color:     "var(--text)",
-      border:    "1px solid rgba(255,255,255,0.12)",
-      boxShadow: "0 1px 0 rgba(255,255,255,0.07) inset, 0 -1px 0 rgba(0,0,0,0.22) inset",
+      border:    "1px solid rgba(255,255,255,0.09)",
+      boxShadow: "0 1px 0 rgba(255,255,255,0.04) inset, 0 -1px 0 rgba(0,0,0,0.18) inset",
       transform: pressed ? "translateY(1px) scale(0.98)" : hovered ? "translateY(-1px)" : "translateY(0)",
     };
   } else if (variant === "ghost") {
     variantStyle = {
-      background: hovered ? "rgba(255,255,255,0.06)" : "transparent",
+      background: hovered ? "rgba(255,255,255,0.04)" : "transparent",
       color:      hovered ? "var(--text)" : "var(--text-sub)",
       border:     "1px solid transparent",
       boxShadow:  "none",
@@ -118,19 +96,31 @@ export function Button({
     variantStyle = {
       background: hovered ? "rgba(255,255,255,0.04)" : "transparent",
       color:      "var(--text)",
-      border:     hovered ? "1px solid rgba(255,255,255,0.2)" : "1px solid var(--border-hi)",
+      border:     hovered ? "1px solid rgba(255,255,255,0.14)" : "1px solid var(--border-hi)",
       boxShadow:  "none",
       transform:  pressed ? "translateY(1px)" : hovered ? "translateY(-1px)" : "translateY(0)",
     };
   }
 
+  // focus ring color — use accent for primary, white for others
+  const focusRingColor = (variant === "primary" || color)
+    ? (color ?? "#876cff")
+    : "rgba(255,255,255,0.5)";
+
   return (
     <button
+      ref={ref}
       disabled={isDisabled}
+      aria-disabled={isDisabled}
+      aria-busy={loading}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => { setHovered(false); setPressed(false); }}
       onMouseDown={() => setPressed(true)}
       onMouseUp={() => setPressed(false)}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      onKeyDown={(e) => { if (e.key === " " || e.key === "Enter") setPressed(true); }}
+      onKeyUp={(e) => { if (e.key === " " || e.key === "Enter") setPressed(false); }}
       style={{
         display:        "inline-flex",
         alignItems:     "center",
@@ -151,6 +141,7 @@ export function Button({
         outline:        "none",
         flexShrink:     0,
         ...variantStyle,
+        ...(focused && !isDisabled ? { outline: `2px solid ${focusRingColor}`, outlineOffset: "2px" } : {}),
         ...style,
       }}
       {...props}
@@ -165,4 +156,6 @@ export function Button({
       {!loading && iconRight}
     </button>
   );
-}
+});
+
+Button.displayName = "Button";

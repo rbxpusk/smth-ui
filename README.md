@@ -2,7 +2,7 @@
 
 Cool frontend components for starters or vibe coders that suck at ui.
 
-31 dark-themed React components with inline styles and CSS custom properties. No Tailwind, no runtime deps — just React.
+38 dark-themed React components with inline styles and CSS custom properties. No Tailwind, no runtime deps — just React.
 
 ## Install
 
@@ -52,7 +52,7 @@ Pass `color` to override the accent on any component:
 
 ## Components
 
-Accordion, Alert, Avatar, AvatarGroup, Badge, Breadcrumb, Button, Card, CodeDisplay, DigitCounter, Divider, Drawer, DropdownMenu, EmptyState, Input, Textarea, Kbd, Modal, Notifications, NumberInput, Pagination, Popover, Progress, Select, Skeleton, Spinner, StatCard, Table, Tabs, TagInput, Toast, Toggle, Checkbox, Radio, Tooltip
+Accordion, Alert, Avatar, AvatarGroup, Badge, Banner, Breadcrumb, Button, Card, CodeDisplay, ColorPicker, Combobox, DigitCounter, Divider, Drawer, DropdownMenu, EmptyState, Input, Textarea, Kbd, Modal, Notifications, NumberInput, Pagination, Popover, Progress, Select, Sheet, Skeleton, Slider, Spinner, StatCard, Stepper, Table, Tabs, TagInput, Timeline, Toast, Toggle, Checkbox, Radio, Tooltip
 
 ## AI / Agent Integration
 

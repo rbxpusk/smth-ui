@@ -28,8 +28,8 @@ export function EmptyState({ icon, title, message, action, color = "#876cff" }: 
       justifyContent: "center",
       gap:            "0",
       padding:        "64px 40px",
-      borderRadius:   "18px",
-      background:     "linear-gradient(170deg, #1c1a28 0%, #131122 100%)",
+      borderRadius:   "var(--radius, 12px)",
+      background:     "linear-gradient(170deg, var(--surface-hi, var(--surface, #111)) 0%, var(--surface-lo, var(--bg, #0a0a0a)) 100%)",
       boxShadow:      "0 0 0 1px rgba(255,255,255,0.09), 0 2px 0 rgba(255,255,255,0.05) inset, 0 -1px 0 rgba(0,0,0,0.5) inset, 0 20px 60px rgba(0,0,0,0.55)",
       textAlign:      "center",
     }}>

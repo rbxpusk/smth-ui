@@ -14,6 +14,7 @@ import { Button, Badge, StatCard, Avatar, AvatarGroup, Progress,
          Modal, Notifications, DropdownMenu, Drawer, Popover, Select, Accordion,
          Breadcrumb, Kbd, Skeleton, Spinner, Divider, EmptyState,
          Pagination, TagInput, NumberInput, DigitCounter, CodeDisplay,
+         Banner, ColorPicker, Combobox, Sheet, Slider, Stepper, Timeline,
          toast, Toaster, ToastProvider, useToast } from "@puskevi/smth-ui";
 ```
 
@@ -419,6 +420,114 @@ type BreadcrumbItem = { label: string; href?: string };
 ```ts
 <CodeDisplay code={string} language?={string} />
 // Syntax-highlighted code block with copy button
+```
+
+### Banner
+
+```ts
+<Banner
+  variant?="info" | "success" | "warning" | "error"
+  dismissible?={boolean}
+  onDismiss?={() => void}
+  icon?={ReactNode}
+  action?={ReactNode}
+  color?={string}        // hex — overrides variant color
+>
+  {children}             // inline text content
+</Banner>
+```
+
+### ColorPicker
+
+```ts
+<ColorPicker
+  value={string}         // hex color
+  onChange={(color: string) => void}
+  label?={string}
+  presets?={string[]}    // array of hex colors for swatch grid
+  showInput?={boolean}   // show hex text input (default true)
+/>
+```
+
+### Combobox
+
+```ts
+type ComboboxOption = { value: string; label: string; disabled?: boolean };
+
+<Combobox
+  options={ComboboxOption[]}
+  value?={string}
+  onChange?={(value: string) => void}
+  placeholder?={string}
+  label?={string}
+  hint?={string}
+  error?={string}
+  color?={string}
+  emptyText?={string}    // shown when no results match (default "No results")
+/>
+```
+
+### Sheet
+
+```ts
+<Sheet
+  open={boolean}
+  onClose={() => void}
+  title?={string}
+  height?="sm" | "md" | "lg" | "full"
+  footer?={ReactNode}
+>
+  {children}
+</Sheet>
+```
+
+Bottom sheet overlay. Closes on Escape and backdrop click. Has focus trap and scroll lock.
+
+### Slider
+
+```ts
+<Slider
+  value={number}
+  onChange={(value: number) => void}
+  min?={number}          // default 0
+  max?={number}          // default 100
+  step?={number}         // default 1
+  label?={string}
+  showValue?={boolean}
+  disabled?={boolean}
+  color?={string}
+/>
+```
+
+### Stepper
+
+```ts
+type StepperStep = { id: string; label: string; description?: string };
+
+<Stepper
+  steps={StepperStep[]}
+  activeStep={number}    // 0-based index
+  color?={string}
+  orientation?="horizontal" | "vertical"
+/>
+```
+
+### Timeline
+
+```ts
+type TimelineItem = {
+  id:           string;
+  title:        string;
+  description?: string;
+  time?:        string;
+  icon?:        ReactNode;
+  color?:       string;    // per-item accent
+};
+
+<Timeline
+  items={TimelineItem[]}
+  color?={string}          // global accent (default purple)
+/>
 ```
 
 ### Card

@@ -30,8 +30,8 @@ export function SkeletonCard() {
   return (
     <div style={{
       padding: "20px",
-      borderRadius: "16px",
-      background: "linear-gradient(170deg, #181620 0%, #0f0d1a 100%)",
+      borderRadius: "var(--radius, 12px)",
+      background: "linear-gradient(170deg, var(--surface-hi, var(--surface, #111)) 0%, var(--surface, #111) 100%)",
       boxShadow: "0 0 0 1px rgba(255,255,255,0.06)",
       display: "flex", flexDirection: "column", gap: "16px",
     }}>
@@ -53,8 +53,8 @@ export function SkeletonRow() {
       display: "grid", gridTemplateColumns: "36px 1fr 120px 80px",
       alignItems: "center", gap: "12px",
       padding: "12px 16px",
-      borderRadius: "12px",
-      background: "linear-gradient(170deg, #141220 0%, #0f0d1a 100%)",
+      borderRadius: "var(--radius, 12px)",
+      background: "linear-gradient(170deg, var(--surface-hi, var(--surface, #111)) 0%, var(--surface, #111) 100%)",
       boxShadow: "0 0 0 1px rgba(255,255,255,0.055)",
     }}>
       <Skeleton width="36px" height="36px" radius="50%" />

@@ -1,4 +1,5 @@
 import { type CSSProperties, type HTMLAttributes } from "react";
+import { safeHex, parseHex, hexToRgb, isLight, safeSrc } from "@/lib/color";
 
 type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl";
 
@@ -54,22 +55,13 @@ function getInitials(name: string) {
   return (w[0] + (w.length > 1 ? w[w.length - 1] : "")).toUpperCase();
 }
 
-function hexToRgbAvatar(hex: string): [number,number,number] {
-  const h = hex.replace("#","");
-  return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];
-}
-
-function isLight(hex: string) {
-  const [r,g,b] = hexToRgbAvatar(hex);
-  return (0.299*r + 0.587*g + 0.114*b) / 255 > 0.6;
-}
-
 export function Avatar({ name = "", src, size = "md", ring = false, ringColor, status, style, color, ...rest }: AvatarProps) {
   const { sz, font } = sizes[size];
   const statusSz = Math.max(8, Math.round(sz * 0.22));
-  const bg       = color ? color : src ? undefined : getGradient(name);
-  const rc       = ringColor ?? "#876cff";
-  const [rr,rg,rb] = hexToRgbAvatar(rc);
+  const validColor = color ? safeHex(color) : undefined;
+  const bg       = validColor ? validColor : src ? undefined : getGradient(name);
+  const rc       = safeHex(ringColor ?? "#876cff");
+  const [rr,rg,rb] = hexToRgb(rc);
 
   return (
     <div {...rest} style={{ position: "relative", flexShrink: 0, width: sz, height: sz, ...style }}>
@@ -94,7 +86,7 @@ export function Avatar({ name = "", src, size = "md", ring = false, ringColor, s
         inset:              ring ? "2px" : "0",
         borderRadius:       "50%",
         background:         bg,
-        backgroundImage:    src ? `url(${src})` : undefined,
+        backgroundImage:    src ? (safeSrc(src) ? `url(${safeSrc(src)})` : undefined) : undefined,
         backgroundSize:     "cover",
         backgroundPosition: "center",
         boxShadow:          "0 2px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -1px 0 rgba(0,0,0,0.3)",
@@ -106,7 +98,7 @@ export function Avatar({ name = "", src, size = "md", ring = false, ringColor, s
           <span style={{
             fontSize:      `${font}px`,
             fontWeight:    900,
-            color:         color && isLight(color) ? "#111" : "#fff",
+            color:         validColor && isLight(validColor!) ? "#111" : "#fff",
             letterSpacing: "-0.5px",
             textShadow:    "0 1px 4px rgba(0,0,0,0.4)",
             userSelect:    "none",
@@ -148,7 +140,7 @@ export function AvatarGroup({ names, max = 4, size = "sm", style, ...htmlProps }
   return (
     <div {...htmlProps} style={{ display: "flex", alignItems: "center", ...style }}>
       {visible.map((name, i) => (
-        <div key={i} style={{
+        <div key={`${name}-${i}`} style={{
           marginLeft:   i === 0 ? 0 : `-${Math.round(sz * 0.28)}px`,
           zIndex:       visible.length - i,
           borderRadius: "50%",

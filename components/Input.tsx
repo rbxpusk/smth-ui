@@ -1,5 +1,5 @@
 "use client";
-import { type InputHTMLAttributes, type ReactNode, useState, useId } from "react";
+import React, { type InputHTMLAttributes, type ReactNode, useState, useId } from "react";
 
 type InputSize = "sm" | "md" | "lg";
 
@@ -23,10 +23,10 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   color?:      string;
 }
 
-export function Input({
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({
   label, hint, error, success, iconLeft, iconRight, fullWidth,
   clearable, onClear, inputSize = "md", color = "#876cff", style, ...props
-}: InputProps) {
+}, ref) {
   const [focused, setFocused] = useState(false);
   const hintId = useId();
   const hasError   = !!error;
@@ -82,6 +82,7 @@ export function Input({
           </span>
         )}
         <input
+          ref={ref}
           aria-invalid={hasError || undefined}
           aria-describedby={(hint || error || (success && typeof success === "string")) ? hintId : undefined}
           onFocus={(e) => { setFocused(true);  props.onFocus?.(e); }}
@@ -112,7 +113,7 @@ export function Input({
         {showClear ? (
           <button
             type="button"
-            tabIndex={-1}
+            tabIndex={0}
             onClick={() => { onClear?.(); }}
             aria-label="Clear"
             style={{
@@ -177,7 +178,9 @@ export function Input({
       )}
     </div>
   );
-}
+});
+
+Input.displayName = "Input";
 
 interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?:     string;
@@ -188,7 +191,7 @@ interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
   color?:     string;
 }
 
-export function Textarea({ label, hint, error, success, fullWidth, color = "#876cff", style, ...props }: TextareaProps) {
+export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea({ label, hint, error, success, fullWidth, color = "#876cff", style, ...props }, ref) {
   const [focused, setFocused] = useState(false);
   const hintId    = useId();
   const hasError  = !!error;
@@ -221,6 +224,7 @@ export function Textarea({ label, hint, error, success, fullWidth, color = "#876
         </label>
       )}
       <textarea
+        ref={ref}
         aria-invalid={hasError || undefined}
         aria-describedby={(hint || error || (success && typeof success === "string")) ? hintId : undefined}
         onFocus={(e) => { setFocused(true);  props.onFocus?.(e); }}
@@ -264,4 +268,6 @@ export function Textarea({ label, hint, error, success, fullWidth, color = "#876
       )}
     </div>
   );
-}
+});
+
+Textarea.displayName = "Textarea";

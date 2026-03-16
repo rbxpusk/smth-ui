@@ -21,7 +21,7 @@ interface CardProps {
 }
 
 // Base elevated surface — uses CSS vars so playground theme injection works
-const BASE_BG   = "linear-gradient(170deg, var(--surface, #1c1a28) 0%, var(--surface-lo, #131122) 100%)";
+const BASE_BG   = "linear-gradient(170deg, var(--surface-hi, var(--surface, #111)) 0%, var(--surface-lo, var(--bg, #0a0a0a)) 100%)";
 const BASE_SHADOW = "0 0 0 1px rgba(255,255,255,0.09), 0 2px 0 rgba(255,255,255,0.05) inset, 0 -1px 0 rgba(0,0,0,0.5) inset, 0 20px 60px rgba(0,0,0,0.6)";
 
 const variantOverrides: Record<CardVariant, { borderRgba: string; glowRgba?: string }> = {
@@ -70,7 +70,7 @@ export function Card({
         overflow:   "hidden",
         borderRadius: radius,
         padding,
-        background: variant === "flat" ? "#111019" : BASE_BG,
+        background: variant === "flat" ? "var(--surface, #111)" : BASE_BG,
         boxShadow:  shadow,
         cursor:     onClick ? "pointer" : undefined,
         transform:  onClick && hovered ? "translateY(-2px)" : "translateY(0)",

@@ -59,8 +59,10 @@ export function TagInput({
           gap:         "6px",
           padding:     "8px 12px",
           minHeight:   "42px",
-          borderRadius: "11px",
-          background:  "linear-gradient(170deg, #181620 0%, #0f0d1a 100%)",
+          borderRadius: "var(--radius, 11px)",
+          background:  focused
+            ? "linear-gradient(170deg, var(--surface-hi, rgba(255,255,255,0.07)) 0%, var(--surface, rgba(255,255,255,0.04)) 100%)"
+            : "linear-gradient(170deg, var(--surface, rgba(255,255,255,0.05)) 0%, var(--surface-lo, rgba(0,0,0,0.3)) 100%)",
           border:      focused
             ? `1px solid rgba(${r},${g},${b},0.5)`
             : "1px solid rgba(255,255,255,0.1)",
@@ -81,7 +83,7 @@ export function TagInput({
               gap:         "5px",
               height:      "24px",
               padding:     "0 8px 0 10px",
-              borderRadius: "6px",
+              borderRadius: "var(--radius-sm, 6px)",
               fontSize:    "12px",
               fontWeight:  600,
               color,

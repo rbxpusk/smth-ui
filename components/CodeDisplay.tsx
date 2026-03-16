@@ -1,5 +1,6 @@
 "use client";
 import { useState, type CSSProperties } from "react";
+import { safeHex, hexToRgbString } from "@/lib/color";
 
 interface CodeDisplayProps {
   code:       string;
@@ -9,25 +10,18 @@ interface CodeDisplayProps {
   style?:     CSSProperties;
 }
 
-function hexToRgb(hex: string): string {
-  const h = hex.replace("#", "");
-  const r = parseInt(h.substring(0, 2), 16);
-  const g = parseInt(h.substring(2, 4), 16);
-  const b = parseInt(h.substring(4, 6), 16);
-  return `${r},${g},${b}`;
-}
-
 export function CodeDisplay({ code, label, color = "#876cff", maxWidth, style }: CodeDisplayProps) {
   const [copied, setCopied]     = useState(false);
   const [hoverBtn, setHoverBtn] = useState(false);
 
-  const rgb = hexToRgb(color);
+  const validColor = safeHex(color);
+  const rgb = hexToRgbString(validColor);
 
   function handleCopy() {
     navigator.clipboard.writeText(code).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    }).catch(() => {});
   }
 
   return (
@@ -57,7 +51,7 @@ export function CodeDisplay({ code, label, color = "#876cff", maxWidth, style }:
         <div style={{
           width:      "3px",
           alignSelf:  "stretch",
-          background: `linear-gradient(180deg, ${color}, rgba(${rgb},0.3))`,
+          background: `linear-gradient(180deg, ${validColor}, rgba(${rgb},0.3))`,
           flexShrink: 0,
         }} />
         <span style={{
@@ -67,7 +61,7 @@ export function CodeDisplay({ code, label, color = "#876cff", maxWidth, style }:
           fontSize:      "15px",
           fontWeight:    700,
           letterSpacing: "0.12em",
-          color:         color,
+          color:         validColor,
           userSelect:    "all",
           textShadow:    `0 0 24px rgba(${rgb},0.4)`,
           whiteSpace:    "nowrap",
@@ -91,7 +85,7 @@ export function CodeDisplay({ code, label, color = "#876cff", maxWidth, style }:
             border:         "none",
             borderLeft:     `1px solid rgba(${rgb},0.15)`,
             background:     hoverBtn ? `rgba(${rgb},0.12)` : "transparent",
-            color:          copied ? "#4ade80" : color,
+            color:          copied ? "#4ade80" : validColor,
             cursor:         "pointer",
             flexShrink:     0,
             transition:     "background 0.15s, color 0.2s",

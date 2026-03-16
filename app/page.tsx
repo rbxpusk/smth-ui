@@ -29,6 +29,13 @@ import { DropdownMenu }  from "@/components/DropdownMenu";
 import { Drawer }        from "@/components/Drawer";
 import { TagInput }      from "@/components/TagInput";
 import { Popover }       from "@/components/Popover";
+import { Slider }        from "@/components/Slider";
+import { Combobox }      from "@/components/Combobox";
+import { Banner }        from "@/components/Banner";
+import { Timeline }      from "@/components/Timeline";
+import { Stepper }       from "@/components/Stepper";
+import { Sheet }         from "@/components/Sheet";
+import { ColorPicker }   from "@/components/ColorPicker";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -152,6 +159,12 @@ export default function ShowcasePage() {
   const [drawerOpen,   setDrawerOpen]     = useState(false);
   const [tags,         setTags]           = useState<string[]>(["design", "react"]);
   const [currentPage,  setCurrentPage]    = useState(1);
+  const [sliderVal,    setSliderVal]      = useState(40);
+  const [comboVal,     setComboVal]       = useState("");
+  const [comboErr,     setComboErr]       = useState("");
+  const [sheetOpen,    setSheetOpen]      = useState(false);
+  const [stepperStep,  setStepperStep]    = useState(1);
+  const [pickerColor,  setPickerColor]    = useState("#876cff");
 
   return (
     <div style={{ background: "var(--bg)", minHeight: "100vh", position: "relative", overflow: "hidden" }}>
@@ -888,6 +901,126 @@ export default function ShowcasePage() {
             message="Try adjusting your search or filter to find what you're looking for."
             action={<Button size="sm">Clear filters</Button>}
           />
+        </Section>
+
+        {/* ── SLIDER ── */}
+        <Section title="Slider">
+          <div style={{ display: "flex", flexDirection: "column", gap: "20px", maxWidth: "400px" }}>
+            <Slider value={sliderVal} onChange={setSliderVal} label="Volume" showValue color="#876cff" />
+            <Slider value={sliderVal} onChange={setSliderVal} label="Green accent" showValue color="#4ade80" />
+            <Slider value={50} onChange={() => {}} label="Disabled" disabled />
+          </div>
+        </Section>
+
+        {/* ── COMBOBOX ── */}
+        <Section title="Combobox">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "16px", maxWidth: "680px" }}>
+            <Combobox
+              label="Language"
+              placeholder="Search languages…"
+              value={comboVal}
+              onChange={setComboVal}
+              options={[
+                { value: "ts",     label: "TypeScript" },
+                { value: "js",     label: "JavaScript" },
+                { value: "py",     label: "Python" },
+                { value: "rs",     label: "Rust" },
+                { value: "go",     label: "Go" },
+                { value: "java",   label: "Java" },
+                { value: "swift",  label: "Swift" },
+                { value: "kotlin", label: "Kotlin" },
+              ]}
+            />
+            <Combobox
+              label="With error"
+              placeholder="Search…"
+              value={comboErr}
+              onChange={setComboErr}
+              error={comboErr ? undefined : "Selection is required"}
+              options={[
+                { value: "a", label: "Option A" },
+                { value: "b", label: "Option B" },
+                { value: "c", label: "Option C" },
+              ]}
+            />
+          </div>
+        </Section>
+
+        {/* ── BANNER ── */}
+        <Section title="Banners">
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <Banner variant="info" dismissible>New version 2.0 is available. Update now for the latest features.</Banner>
+            <Banner variant="success">Deployment completed successfully.</Banner>
+            <Banner variant="warning" dismissible>Your trial expires in 3 days.</Banner>
+            <Banner variant="error" action={<Button size="xs" variant="ghost">Retry</Button>}>Failed to sync data with the server.</Banner>
+          </div>
+        </Section>
+
+        {/* ── TIMELINE ── */}
+        <Section title="Timeline">
+          <div style={{ maxWidth: "500px" }}>
+            <Timeline
+              items={[
+                { id: "1", title: "Step 1",  description: "First step in the process.",  time: "Day 1" },
+                { id: "2", title: "Step 2",  description: "Second step progressing.",     time: "Day 3",  color: "#4ade80" },
+                { id: "3", title: "Step 3",  description: "Almost there, keep going.",    time: "Day 5",  color: "#60a5fa" },
+                { id: "4", title: "Step 4",  description: "Final step — all done.",       time: "Day 7",  color: "#f59e0b" },
+              ]}
+            />
+          </div>
+        </Section>
+
+        {/* ── STEPPER ── */}
+        <Section title="Stepper">
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+            <Stepper
+              activeStep={stepperStep}
+              steps={[
+                { id: "account",  label: "Account",  description: "Create your account" },
+                { id: "profile",  label: "Profile",  description: "Set up your profile" },
+                { id: "settings", label: "Settings", description: "Configure preferences" },
+                { id: "done",     label: "Done",     description: "Ready to go" },
+              ]}
+            />
+            <Row gap="8px">
+              <Button size="xs" variant="secondary" onClick={() => setStepperStep(s => Math.max(0, s - 1))}>Back</Button>
+              <Button size="xs" onClick={() => setStepperStep(s => Math.min(3, s + 1))}>Next</Button>
+            </Row>
+          </div>
+        </Section>
+
+        {/* ── SHEET ── */}
+        <Section title="Sheet (bottom)">
+          <Button variant="secondary" onClick={() => setSheetOpen(true)}>Open sheet</Button>
+          <Sheet
+            open={sheetOpen}
+            onClose={() => setSheetOpen(false)}
+            title="Quick actions"
+            footer={
+              <>
+                <Button variant="ghost" size="sm" onClick={() => setSheetOpen(false)}>Cancel</Button>
+                <Button size="sm" onClick={() => { toast.success("Done!"); setSheetOpen(false); }}>Confirm</Button>
+              </>
+            }
+          >
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              <p style={{ fontSize: "14px", color: "var(--text-sub)", lineHeight: 1.7 }}>
+                Sheet slides up from the bottom — great for mobile-friendly actions and confirmations.
+              </p>
+              <Input label="Quick note" placeholder="Type something…" />
+            </div>
+          </Sheet>
+        </Section>
+
+        {/* ── COLOR PICKER ── */}
+        <Section title="Color picker">
+          <div style={{ maxWidth: "220px" }}>
+            <ColorPicker
+              label="Accent color"
+              value={pickerColor}
+              onChange={setPickerColor}
+            />
+          </div>
         </Section>
 
       </div>

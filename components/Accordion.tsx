@@ -30,7 +30,7 @@ function AccordionRow({
 
   useEffect(() => {
     if (bodyRef.current) setHeight(bodyRef.current.scrollHeight);
-  }, [item.children]);
+  }, [item.children, open]);
 
   const isDisabled = item.disabled ?? false;
 

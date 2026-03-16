@@ -1,5 +1,6 @@
 "use client";
 import { type CSSProperties, useState } from "react";
+import { safeHex, hexToRgb } from "@/lib/color";
 
 interface NumberInputProps {
   value:     number;
@@ -9,6 +10,7 @@ interface NumberInputProps {
   step?:     number;
   label?:    string;
   disabled?: boolean;
+  color?:    string;
   style?:    CSSProperties;
 }
 
@@ -20,8 +22,11 @@ export function NumberInput({
   step = 1,
   label,
   disabled = false,
+  color = "#876cff",
   style,
 }: NumberInputProps) {
+  const validColor = safeHex(color);
+  const [r, g, b] = hexToRgb(validColor);
   const [focused, setFocused]   = useState(false);
   const [hoverDec, setHoverDec] = useState(false);
   const [hoverInc, setHoverInc] = useState(false);
@@ -84,11 +89,13 @@ export function NumberInput({
         display:      "flex",
         alignItems:   "center",
         height:       "40px",
-        borderRadius: "10px",
-        border:       `1px solid ${focused ? "rgba(135,108,255,0.5)" : "rgba(255,255,255,0.08)"}`,
-        background:   "linear-gradient(170deg, #141220 0%, #0f0d1a 100%)",
+        borderRadius: "var(--radius, 10px)",
+        border:       `1px solid ${focused ? `rgba(${r},${g},${b},0.5)` : "rgba(255,255,255,0.08)"}`,
+        background:   focused
+          ? "linear-gradient(170deg, var(--surface-hi, rgba(255,255,255,0.07)) 0%, var(--surface, rgba(255,255,255,0.04)) 100%)"
+          : "linear-gradient(170deg, var(--surface, rgba(255,255,255,0.05)) 0%, var(--surface-lo, rgba(0,0,0,0.3)) 100%)",
         boxShadow:    focused
-          ? "0 0 0 3px rgba(135,108,255,0.12), 0 2px 0 rgba(255,255,255,0.03) inset"
+          ? `0 0 0 3px rgba(${r},${g},${b},0.12), 0 2px 0 rgba(255,255,255,0.03) inset`
           : "0 2px 0 rgba(255,255,255,0.03) inset, 0 4px 10px rgba(0,0,0,0.25)",
         transition:   "border-color 0.15s, box-shadow 0.15s",
         opacity:      disabled ? 0.5 : 1,

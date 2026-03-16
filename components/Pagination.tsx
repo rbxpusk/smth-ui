@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { safeHex, hexToRgb } from "@/lib/color";
 
 interface PaginationProps {
   total:     number;
@@ -8,11 +9,6 @@ interface PaginationProps {
   onChange?: (page: number) => void;
   siblings?: number;
   color?:    string;  // hex accent color
-}
-
-function hexToRgb(hex: string): [number,number,number] {
-  const h = hex.replace("#", "");
-  return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
 }
 
 function range(start: number, end: number) {
@@ -33,6 +29,7 @@ export function Pagination({
   total, pageSize = 10, page: controlledPage, onChange, siblings = 1, color = "#876cff",
 }: PaginationProps) {
   const [internalPage, setInternalPage] = useState(1);
+  const validColor = safeHex(color);
   const page   = controlledPage ?? internalPage;
   const pages  = Math.max(1, Math.ceil(total / pageSize));
   const pages_ = buildPages(page, pages, siblings);
@@ -45,7 +42,7 @@ export function Pagination({
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-      <PageBtn onClick={() => go(page - 1)} disabled={page === 1} color={color} aria-label="Previous">
+      <PageBtn onClick={() => go(page - 1)} disabled={page === 1} color={validColor} aria-label="Previous">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
           <path d="M15 18l-6-6 6-6"/>
         </svg>
@@ -54,10 +51,10 @@ export function Pagination({
       {pages_.map((p, i) =>
         p === "…"
           ? <span key={`e${i}`} style={{ padding: "0 4px", fontSize: "13px", color: "var(--text-muted)", userSelect: "none" }}>…</span>
-          : <PageBtn key={p} active={p === page} color={color} onClick={() => go(p as number)}>{p}</PageBtn>
+          : <PageBtn key={p} active={p === page} color={validColor} onClick={() => go(p as number)}>{p}</PageBtn>
       )}
 
-      <PageBtn onClick={() => go(page + 1)} disabled={page === pages} color={color} aria-label="Next">
+      <PageBtn onClick={() => go(page + 1)} disabled={page === pages} color={validColor} aria-label="Next">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
           <path d="M9 18l6-6-6-6"/>
         </svg>
@@ -84,6 +81,7 @@ function PageBtn({
       onClick={onClick}
       disabled={disabled}
       aria-label={ariaLabel}
+      aria-current={active ? "page" : undefined}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{

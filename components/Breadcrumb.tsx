@@ -12,13 +12,13 @@ interface BreadcrumbProps {
 
 export function Breadcrumb({ items }: BreadcrumbProps) {
   return (
-    <nav style={{ display: "flex", alignItems: "center", gap: "4px", flexWrap: "wrap" }}>
+    <nav aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", gap: "4px", flexWrap: "wrap" }}>
       {items.map((item, i) => {
         const isLast   = i === items.length - 1;
         const isActive = isLast;
         const Tag      = item.href ? "a" : "span";
         return (
-          <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+          <span key={item.label?.toString() ?? i} style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
             <Tag
               {...(item.href ? { href: item.href } : {})}
               onClick={!item.href ? item.onClick : undefined}
