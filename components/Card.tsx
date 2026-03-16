@@ -37,7 +37,7 @@ export function Card({
   children,
   variant = "default",
   padding = "20px",
-  radius = "16px",
+  radius = "var(--radius-lg, 16px)",
   style,
   noise = true,
   specular = true,

@@ -138,6 +138,7 @@ export default function PlaygroundPage() {
 :root {
   --bg:          ${theme.bg};
   --surface:     ${theme.surface};
+  --surface-hi:  color-mix(in srgb, ${theme.surface} 90%, ${theme.text} 10%);
   --surface-lo:  ${theme.surfaceLo};
   --text:        ${theme.text};
   --text-sub:    ${theme.textSub};
@@ -177,7 +178,7 @@ export default function PlaygroundPage() {
       --radius:      ${theme.radius}px;
       --radius-sm:   ${Math.round(theme.radius * 0.55)}px;
       --radius-lg:   ${Math.round(theme.radius * 1.4)}px;
-      --surface-hi:  color-mix(in srgb, ${theme.surface} 60%, ${theme.text} 40%);
+      --surface-hi:  color-mix(in srgb, ${theme.surface} 90%, ${theme.text} 10%);
       color:         ${theme.text};
     }
   `;
