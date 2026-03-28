@@ -17,92 +17,61 @@ function hexToRgb(hex: string): string {
   return `${r},${g},${b}`;
 }
 
-interface DigitTileProps {
-  digit:       string;
-  color:       string;
-  delay:       number;
-  isIcon?:     boolean;
-  iconNode?:   ReactNode;
-}
+const REEL_H = 52;
 
-function DigitTile({ digit, color, delay, isIcon = false, iconNode }: DigitTileProps) {
-  const [displayed, setDisplayed] = useState("0");
-  const [animating, setAnimating]  = useState(false);
+function DigitReel({ digit, color, delay = 0 }: { digit: string; color: string; delay?: number }) {
+  const [current, setCurrent] = useState(digit);
   const rgb = hexToRgb(color);
 
   useEffect(() => {
-    if (isIcon) return;
-    const timer = setTimeout(() => {
-      setAnimating(true);
-      // Rapid roll effect: cycle through digits quickly then land
-      let count = 0;
-      const totalSteps = 8 + Math.floor(Math.random() * 6);
-      const interval = setInterval(() => {
-        setDisplayed(String(Math.floor(Math.random() * 10)));
-        count++;
-        if (count >= totalSteps) {
-          clearInterval(interval);
-          setDisplayed(digit);
-          setAnimating(false);
-        }
-      }, 60);
-    }, delay);
-    return () => clearTimeout(timer);
-  }, [digit, delay, isIcon]);
+    const t = setTimeout(() => setCurrent(digit), delay);
+    return () => clearTimeout(t);
+  }, [digit, delay]);
+
+  const num = parseInt(current, 10);
+  const offset = isNaN(num) ? 0 : num * REEL_H;
 
   return (
-    <div style={{
-      width:          "52px",
-      height:         "64px",
-      borderRadius:   "var(--radius, 12px)",
-      background:     `linear-gradient(180deg, var(--surface-hi, var(--surface, #111)) 0%, var(--surface, #111) 100%)`,
-      border:         `1px solid rgba(${rgb},0.28)`,
-      boxShadow:      `0 0 0 1px rgba(255,255,255,0.04) inset, 0 4px 16px rgba(0,0,0,0.5), 0 0 20px rgba(${rgb},0.08)`,
-      display:        "flex",
-      alignItems:     "center",
-      justifyContent: "center",
-      position:       "relative",
-      overflow:       "hidden",
-      flexShrink:     0,
-    }}>
-      {/* Inner top highlight */}
+    <div style={{ position: "relative", width: "44px", height: `${REEL_H}px`, overflow: "hidden" }}>
+      {/* Top fade */}
       <div style={{
-        position:   "absolute",
-        top:        0,
-        left:       "20%",
-        right:      "20%",
-        height:     "1px",
-        background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)",
-        pointerEvents: "none",
+        position: "absolute", top: 0, left: 0, right: 0, height: "14px",
+        background: "linear-gradient(to bottom, var(--surface, #111), transparent)",
+        zIndex: 1, pointerEvents: "none",
       }} />
-      {/* Subtle bottom shadow line */}
+      {/* Bottom fade */}
       <div style={{
-        position:   "absolute",
-        bottom:     0,
-        left:       "10%",
-        right:      "10%",
-        height:     "1px",
-        background: `rgba(${rgb},0.15)`,
-        pointerEvents: "none",
+        position: "absolute", bottom: 0, left: 0, right: 0, height: "14px",
+        background: "linear-gradient(to top, var(--surface, #111), transparent)",
+        zIndex: 1, pointerEvents: "none",
       }} />
-      {isIcon ? (
-        <span style={{ color, display: "flex", alignItems: "center" }}>
-          {iconNode}
-        </span>
-      ) : (
-        <span style={{
-          fontSize:       "26px",
-          fontWeight:     900,
-          fontFamily:     "var(--mono)",
-          color:          animating ? `rgba(${rgb},0.7)` : color,
-          letterSpacing:  "-1px",
-          lineHeight:     1,
-          transition:     animating ? "none" : "color 0.2s",
-          textShadow:     `0 0 20px rgba(${rgb},0.5)`,
-        }}>
-          {displayed}
-        </span>
-      )}
+
+      <div style={{
+        transform: `translateY(-${offset}px)`,
+        transition: `transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)`,
+      }}>
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => (
+          <div
+            key={n}
+            style={{
+              height:         `${REEL_H}px`,
+              display:        "flex",
+              alignItems:     "center",
+              justifyContent: "center",
+              fontSize:       "28px",
+              fontWeight:     700,
+              fontFamily:     "var(--mono)",
+              letterSpacing:  "-1px",
+              color:          n === num
+                ? color
+                : `rgba(${rgb},0.2)`,
+              transition: "color 0.3s",
+            }}
+          >
+            {n}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -116,43 +85,52 @@ export function DigitCounter({
 }: DigitCounterProps) {
   const clamped  = Math.max(0, Math.floor(value));
   const str      = String(clamped).padStart(digits, "0");
-  // If the number is longer than digits, show all digits
   const digitStr = str.length > digits ? str : str.slice(-digits);
+  const rgb      = hexToRgb(color);
 
   return (
-    <div style={{
-      display:        "flex",
-      flexDirection:  "column",
-      alignItems:     "center",
-      gap:            "14px",
-    }}>
+    <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
       <div style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "6px",
+        display:      "flex",
+        alignItems:   "center",
+        background:   "var(--surface, rgba(255,255,255,0.04))",
+        border:       "1px solid rgba(255,255,255,0.08)",
+        borderRadius: "10px",
+        overflow:     "hidden",
       }}>
         {icon && (
-          <DigitTile
-            digit=""
-            color={color}
-            delay={0}
-            isIcon
-            iconNode={icon}
-          />
+          <div style={{
+            display:      "flex",
+            alignItems:   "center",
+            justifyContent: "center",
+            width:        "52px",
+            height:       `${REEL_H}px`,
+            borderRight:  "1px solid rgba(255,255,255,0.07)",
+            color,
+            flexShrink:   0,
+          }}>
+            {icon}
+          </div>
         )}
         {Array.from(digitStr).map((d, i) => (
-          <DigitTile
-            key={i}
-            digit={d}
-            color={color}
-            delay={i * 80}
-          />
+          <div key={i} style={{ display: "flex" }}>
+            {i > 0 && (
+              <div style={{
+                width:      "1px",
+                height:     `${REEL_H}px`,
+                background: "rgba(255,255,255,0.06)",
+                flexShrink: 0,
+              }} />
+            )}
+            <DigitReel digit={d} color={color} delay={i * 55} />
+          </div>
         ))}
       </div>
+
       {label && (
         <span style={{
-          fontSize:      "11px",
-          fontWeight:    700,
+          fontSize:      "10px",
+          fontWeight:    600,
           letterSpacing: "0.12em",
           textTransform: "uppercase",
           color:         "var(--text-muted)",

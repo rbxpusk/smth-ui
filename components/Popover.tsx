@@ -32,9 +32,15 @@ export function Popover({ trigger, content, placement = "bottom", title, width =
       ) setOpen(false);
     }
     function key(e: KeyboardEvent) { if (e.key === "Escape") setOpen(false); }
+    function onScroll() { setOpen(false); }
     document.addEventListener("mousedown", handler);
     document.addEventListener("keydown", key);
-    return () => { document.removeEventListener("mousedown", handler); document.removeEventListener("keydown", key); };
+    window.addEventListener("scroll", onScroll, { passive: true, capture: true });
+    return () => {
+      document.removeEventListener("mousedown", handler);
+      document.removeEventListener("keydown", key);
+      window.removeEventListener("scroll", onScroll, { capture: true } as EventListenerOptions);
+    };
   }, [open]);
 
   function toggle() {

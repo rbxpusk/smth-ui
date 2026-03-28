@@ -3,10 +3,10 @@ import { type ReactNode, useState, useRef } from "react";
 import { safeHex, hexToRgb } from "@/lib/color";
 
 interface Tab {
-  id:       string;
-  label:    string;
-  icon?:    ReactNode;
-  badge?:   string | number;
+  id:        string;
+  label:     string;
+  icon?:     ReactNode;
+  badge?:    string | number;
   disabled?: boolean;
 }
 
@@ -21,7 +21,7 @@ interface TabsProps {
 export function Tabs({ tabs, children, defaultId, color = "#876cff", onChange }: TabsProps) {
   const [active, setActive] = useState(defaultId ?? tabs[0]?.id);
   const validColor = safeHex(color);
-  const [r,g,b] = hexToRgb(validColor);
+  const [r, g, b] = hexToRgb(validColor);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   function select(id: string) {
@@ -53,20 +53,16 @@ export function Tabs({ tabs, children, defaultId, color = "#876cff", onChange }:
 
   return (
     <div>
-      {/* Tab strip */}
+      {/* Tab bar */}
       <div
         role="tablist"
         aria-label="Tabs"
         style={{
-          display:      "inline-flex",
-          alignItems:   "center",
-          gap:          "2px",
-          padding:      "3px",
-          background:   "var(--surface-lo, rgba(255,255,255,0.03))",
-          border:       "1px solid var(--border, rgba(255,255,255,0.06))",
-          borderRadius: "var(--radius, 12px)",
-          marginBottom: "18px",
-          boxShadow:    "0 1px 3px rgba(0,0,0,0.2) inset",
+          display:      "flex",
+          alignItems:   "flex-end",
+          gap:          "0",
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
+          marginBottom: "20px",
         }}
       >
         {tabs.map((tab, idx) => {
@@ -83,36 +79,35 @@ export function Tabs({ tabs, children, defaultId, color = "#876cff", onChange }:
               disabled={isDisabled}
               tabIndex={isActive ? 0 : -1}
               onClick={() => !isDisabled && select(tab.id)}
-              onKeyDown={(e) => handleKeyDown(e, idx)}
+              onKeyDown={e => handleKeyDown(e, idx)}
               style={{
-                position:       "relative",
-                display:        "inline-flex",
-                alignItems:     "center",
-                gap:            "6px",
-                padding:        "7px 16px",
-                fontSize:       "13px",
-                fontWeight:     isActive ? 700 : 500,
-                borderRadius:   "var(--radius-sm, 9px)",
-                border:         isActive
-                  ? `1px solid rgba(${r},${g},${b},0.18)`
-                  : "1px solid transparent",
-                cursor:         isDisabled ? "not-allowed" : "pointer",
-                opacity:        isDisabled ? 0.4 : 1,
-                transition:     "all 0.18s cubic-bezier(0.22,1,0.36,1)",
-                background:     isActive
-                  ? `rgba(${r},${g},${b},0.1)`
-                  : "transparent",
-                color:          isActive ? validColor : "var(--text-muted)",
-                boxShadow:      isActive
-                  ? `0 1px 4px rgba(0,0,0,0.3), 0 0 0 1px rgba(${r},${g},${b},0.08)`
-                  : "none",
-                whiteSpace:     "nowrap",
-                userSelect:     "none",
-                outline:        "none",
+                position:      "relative",
+                display:       "inline-flex",
+                alignItems:    "center",
+                gap:           "6px",
+                padding:       "8px 14px",
+                paddingBottom: "10px",
+                fontSize:      "13px",
+                fontWeight:    isActive ? 500 : 400,
+                color:         isActive
+                  ? "rgba(255,255,255,0.9)"
+                  : "rgba(255,255,255,0.38)",
+                background:    "none",
+                border:        "none",
+                borderBottom:  isActive
+                  ? `2px solid ${validColor}`
+                  : "2px solid transparent",
+                marginBottom:  "-1px",
+                cursor:        isDisabled ? "not-allowed" : "pointer",
+                opacity:       isDisabled ? 0.35 : 1,
+                transition:    "color 0.15s, border-color 0.15s",
+                outline:       "none",
+                whiteSpace:    "nowrap",
+                userSelect:    "none",
               }}
             >
               {tab.icon && (
-                <span style={{ display: "flex", alignItems: "center", opacity: isActive ? 1 : 0.6 }}>
+                <span style={{ display: "flex", alignItems: "center", opacity: isActive ? 0.9 : 0.45 }}>
                   {tab.icon}
                 </span>
               )}
@@ -122,15 +117,16 @@ export function Tabs({ tabs, children, defaultId, color = "#876cff", onChange }:
                   display:        "inline-flex",
                   alignItems:     "center",
                   justifyContent: "center",
-                  minWidth:       "18px",
-                  height:         "16px",
-                  padding:        "0 5px",
-                  borderRadius:   "5px",
+                  minWidth:       "17px",
+                  height:         "15px",
+                  padding:        "0 4px",
+                  borderRadius:   "4px",
                   fontSize:       "10px",
-                  fontWeight:     800,
-                  background:     isActive ? `rgba(${r},${g},${b},0.2)` : "rgba(255,255,255,0.07)",
-                  color:          isActive ? validColor : "var(--text-muted)",
-                  border:         isActive ? `1px solid rgba(${r},${g},${b},0.2)` : "1px solid rgba(255,255,255,0.06)",
+                  fontWeight:     700,
+                  background:     isActive
+                    ? `rgba(${r},${g},${b},0.18)`
+                    : "rgba(255,255,255,0.07)",
+                  color:          isActive ? validColor : "rgba(255,255,255,0.35)",
                   fontFamily:     "var(--mono)",
                 }}>
                   {tab.badge}

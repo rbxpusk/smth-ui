@@ -49,9 +49,9 @@ export function Sheet({
 
   useEffect(() => { setMounted(true); }, []);
 
-  // Reset animDone when sheet opens
+  // Reset state when sheet opens
   useEffect(() => {
-    if (open) setAnimDone(false);
+    if (open) { setAnimDone(false); setClosing(false); }
   }, [open]);
 
   // Clear animation after entry completes so drag transform works
@@ -110,12 +110,14 @@ export function Sheet({
 
   function handleClose() {
     setClosing(true);
-    closeTimerRef.current = setTimeout(() => { setClosing(false); onClose(); }, 320);
+    closeTimerRef.current = setTimeout(() => { onClose(); }, 300);
   }
 
-  // Ref to always get latest handleClose
+  // Ref to always get latest handleClose / onClose
   const handleCloseRef = useRef(handleClose);
   handleCloseRef.current = handleClose;
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   // Drag-to-dismiss with document-level pointer tracking
   useEffect(() => {
@@ -161,7 +163,7 @@ export function Sheet({
         if (handleRef.current) handleRef.current.style.cursor = "grab";
 
         if (dragCurrentY.current >= DISMISS_THRESHOLD) {
-          // Dismiss: slide all the way down
+          // Dismiss: slide all the way down then call onClose directly
           if (panelRef.current) {
             panelRef.current.style.transition = `transform 0.32s ${SPRING}`;
             panelRef.current.style.transform = "translateY(100%)";
@@ -170,10 +172,7 @@ export function Sheet({
             backdropRef.current.style.transition = "opacity 0.28s ease-out";
             backdropRef.current.style.opacity = "0";
           }
-          // Call close after the slide-down finishes
-          setTimeout(() => {
-            handleCloseRef.current();
-          }, 50);
+          setTimeout(() => { onCloseRef.current(); }, 340);
         } else {
           // Snap back with a bouncy spring
           if (panelRef.current) {

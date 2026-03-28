@@ -146,6 +146,126 @@ const tableColumns: TableColumn<PlayerRow>[] = [
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+function NpmBadge() {
+  const [copied, setCopied] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const cmd = "npm i @puskevi/smth-ui";
+
+  function copy() {
+    navigator.clipboard.writeText(cmd);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <div style={{ display: "flex", justifyContent: "center", marginTop: "24px" }}>
+      <button
+        onClick={copy}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          display:      "inline-flex",
+          alignItems:   "center",
+          gap:          "0",
+          background:   "transparent",
+          border:       "none",
+          padding:      "0",
+          cursor:       "pointer",
+          borderRadius: "10px",
+          position:     "relative",
+        }}
+      >
+        {/* shell */}
+        <div style={{
+          display:      "inline-flex",
+          alignItems:   "center",
+          borderRadius: "10px",
+          padding:      "1px",
+          background:   hovered
+            ? "rgba(255,255,255,0.12)"
+            : "rgba(255,255,255,0.07)",
+          transition:   "background 0.2s",
+        }}>
+          {/* npm label chip */}
+          <div style={{
+            display:        "flex",
+            alignItems:     "center",
+            justifyContent: "center",
+            padding:        "7px 11px",
+            background:     hovered ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.03)",
+            borderRadius:   "9px 0 0 9px",
+            transition:     "background 0.2s",
+          }}>
+            <span style={{
+              fontFamily:    "var(--mono, monospace)",
+              fontSize:      "11px",
+              fontWeight:    700,
+              color:         "rgba(255,255,255,0.5)",
+              letterSpacing: "0.04em",
+            }}>
+              npm
+            </span>
+          </div>
+
+          {/* divider */}
+          <div style={{
+            width:      "1px",
+            height:     "32px",
+            background: "rgba(255,255,255,0.07)",
+          }} />
+
+          {/* command */}
+          <div style={{
+            display:      "flex",
+            alignItems:   "center",
+            gap:          "10px",
+            padding:      "7px 14px 7px 12px",
+            background:   "rgba(0,0,0,0.2)",
+            borderRadius: "0 9px 9px 0",
+          }}>
+            <span style={{
+              fontFamily:    "var(--mono, monospace)",
+              fontSize:      "12px",
+              color:         "rgba(255,255,255,0.4)",
+              letterSpacing: "0.01em",
+              whiteSpace:    "nowrap",
+            }}>
+              i{" "}
+              <span style={{ color: "rgba(255,255,255,0.75)", fontWeight: 500 }}>
+                @puskevi/smth-ui
+              </span>
+            </span>
+
+            {/* copy indicator */}
+            <span style={{
+              display:        "inline-flex",
+              alignItems:     "center",
+              justifyContent: "center",
+              width:          "20px",
+              height:         "20px",
+              borderRadius:   "5px",
+              background:     copied
+                ? "rgba(74,222,128,0.15)"
+                : "rgba(255,255,255,0.04)",
+              transition:     "background 0.2s",
+            }}>
+              {copied ? (
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              ) : (
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2" strokeLinecap="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+              )}
+            </span>
+          </div>
+        </div>
+      </button>
+    </div>
+  );
+}
+
 export default function ShowcasePage() {
   const [modalOpen,   setModalOpen]     = useState(false);
   const [toggle,      setToggle]        = useState(true);
@@ -235,24 +355,38 @@ export default function ShowcasePage() {
           </p>
 
           {/* CTAs */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
-            <Button pill size="lg" iconLeft={
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            }>
-              Browse components
-            </Button>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", flexWrap: "wrap" }}>
+            <a href="/docs" style={{ textDecoration: "none" }}>
+              <Button pill size="lg" variant="secondary" iconLeft={
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+              }>
+                Docs
+              </Button>
+            </a>
+            <a href="https://github.com/rbxpusk/smth-ui" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+              <Button pill size="lg" iconLeft={
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/>
+                </svg>
+              }>
+                GitHub
+              </Button>
+            </a>
             <a href="/playground" style={{ textDecoration: "none" }}>
               <Button pill size="lg" variant="secondary" iconLeft={
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
                 </svg>
               }>
-                Theme playground
+                Playground
               </Button>
             </a>
           </div>
+
+          {/* npm install pill */}
+          <NpmBadge />
         </div>
 
 

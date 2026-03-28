@@ -1,5 +1,5 @@
 "use client";
-import { type ReactNode, useState, useRef, useEffect, useId } from "react";
+import { type ReactNode, useState, useId } from "react";
 
 interface AccordionItem {
   id:       string;
@@ -9,10 +9,10 @@ interface AccordionItem {
 }
 
 interface AccordionProps {
-  items:       AccordionItem[];
-  multiple?:   boolean;  // allow multiple open at once
+  items:        AccordionItem[];
+  multiple?:    boolean;
   defaultOpen?: string[];
-  color?:      string;   // hex accent for open chevron
+  color?:       string;
 }
 
 function AccordionRow({
@@ -25,13 +25,6 @@ function AccordionRow({
   headingId: string;
   panelId:   string;
 }) {
-  const bodyRef  = useRef<HTMLDivElement>(null);
-  const [height, setHeight] = useState(0);
-
-  useEffect(() => {
-    if (bodyRef.current) setHeight(bodyRef.current.scrollHeight);
-  }, [item.children, open]);
-
   const isDisabled = item.disabled ?? false;
 
   return (
@@ -59,7 +52,7 @@ function AccordionRow({
           fontWeight:     600,
           letterSpacing:  "-0.01em",
           opacity:        isDisabled ? 0.4 : 1,
-          transition:     "color 0.15s",
+          transition:     "color 0.18s",
         }}
       >
         <span style={{ flex: 1 }}>{item.label}</span>
@@ -71,32 +64,37 @@ function AccordionRow({
             flexShrink: 0,
             color:      open ? color : "var(--text-muted)",
             transform:  open ? "rotate(180deg)" : "rotate(0deg)",
-            transition: "transform 0.22s cubic-bezier(0.22,1,0.36,1), color 0.15s",
+            transition: "transform 0.28s cubic-bezier(0.22,1,0.36,1), color 0.18s",
           }}
         >
           <path d="M6 9l6 6 6-6"/>
         </svg>
       </button>
 
-      {/* Animated body */}
+      {/*
+        CSS grid-template-rows trick — no JS height measurement.
+        Outer grid transitions from 0fr → 1fr, inner div catches overflow.
+        Width is never constrained so wide content doesn't shift layout.
+      */}
       <div
         id={panelId}
         role="region"
         aria-labelledby={headingId}
-        hidden={!open}
         style={{
-          overflow:   "hidden",
-          maxHeight:  open ? `${height}px` : "0px",
-          transition: "max-height 0.28s cubic-bezier(0.22,1,0.36,1)",
+          display:         "grid",
+          gridTemplateRows: open ? "1fr" : "0fr",
+          transition:       "grid-template-rows 0.28s cubic-bezier(0.22,1,0.36,1)",
         }}
       >
-        <div ref={bodyRef} style={{
-          padding:    "0 20px 18px",
-          fontSize:   "13px",
-          color:      "var(--text-sub)",
-          lineHeight: 1.7,
-        }}>
-          {item.children}
+        <div style={{ overflow: "hidden", minHeight: 0 }}>
+          <div style={{
+            padding:    "0 20px 18px",
+            fontSize:   "13px",
+            color:      "var(--text-sub)",
+            lineHeight: 1.7,
+          }}>
+            {item.children}
+          </div>
         </div>
       </div>
     </div>
@@ -123,8 +121,8 @@ export function Accordion({ items, multiple = false, defaultOpen = [], color = "
   return (
     <div style={{
       position:     "relative",
-      overflow:     "hidden",
       borderRadius: "16px",
+      overflow:     "hidden",
       background:   "linear-gradient(170deg, var(--surface, rgba(255,255,255,0.05)) 0%, var(--surface-lo, rgba(0,0,0,0.3)) 100%)",
       boxShadow:    "0 0 0 1px rgba(255,255,255,0.09), 0 2px 0 rgba(255,255,255,0.05) inset, 0 -1px 0 rgba(0,0,0,0.5) inset, 0 20px 60px rgba(0,0,0,0.55)",
     }}>
