@@ -47,6 +47,7 @@ dist/
 docs/
 !components/docs/
 !lib/docs/
+!app/docs/
 
 # packed tarballs
 *.tgz
