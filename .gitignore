@@ -46,6 +46,7 @@ dist/
 # docs / plans / specs (internal tooling)
 docs/
 !components/docs/
+!lib/docs/
 
 # packed tarballs
 *.tgz

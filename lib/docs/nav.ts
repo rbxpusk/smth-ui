@@ -1,0 +1,58 @@
+import type { NavSection } from "./types";
+
+export const DOCS_NAV: NavSection[] = [
+  {
+    title: "",
+    items: [
+      { title: "Introduction",  href: "/docs/introduction" },
+      { title: "Installation",  href: "/docs/installation" },
+      { title: "Theming",       href: "/docs/theming" },
+      { title: "Playground",    href: "/playground", external: true },
+    ],
+  },
+  {
+    title: "Components",
+    items: [
+      { title: "Accordion",    href: "/docs/components/accordion" },
+      { title: "Alert",        href: "/docs/components/alert" },
+      { title: "Avatar",       href: "/docs/components/avatar" },
+      { title: "Badge",        href: "/docs/components/badge" },
+      { title: "Banner",       href: "/docs/components/banner" },
+      { title: "Breadcrumb",   href: "/docs/components/breadcrumb" },
+      { title: "Button",       href: "/docs/components/button" },
+      { title: "Card",         href: "/docs/components/card" },
+      { title: "CodeDisplay",  href: "/docs/components/codedisplay" },
+      { title: "ColorPicker",  href: "/docs/components/colorpicker" },
+      { title: "Combobox",     href: "/docs/components/combobox" },
+      { title: "DigitCounter", href: "/docs/components/digitcounter" },
+      { title: "Divider",      href: "/docs/components/divider" },
+      { title: "Drawer",       href: "/docs/components/drawer" },
+      { title: "DropdownMenu", href: "/docs/components/dropdownmenu" },
+      { title: "EmptyState",   href: "/docs/components/emptystate" },
+      { title: "Input",        href: "/docs/components/input" },
+      { title: "Kbd",          href: "/docs/components/kbd" },
+      { title: "Modal",        href: "/docs/components/modal" },
+      { title: "Notifications",href: "/docs/components/notifications" },
+      { title: "NumberInput",  href: "/docs/components/numberinput" },
+      { title: "Pagination",   href: "/docs/components/pagination" },
+      { title: "Popover",      href: "/docs/components/popover" },
+      { title: "Progress",     href: "/docs/components/progress" },
+      { title: "Select",       href: "/docs/components/select" },
+      { title: "Sheet",        href: "/docs/components/sheet" },
+      { title: "Skeleton",     href: "/docs/components/skeleton" },
+      { title: "Slider",       href: "/docs/components/slider" },
+      { title: "Spinner",      href: "/docs/components/spinner" },
+      { title: "StatCard",     href: "/docs/components/statcard" },
+      { title: "Stepper",      href: "/docs/components/stepper" },
+      { title: "Table",        href: "/docs/components/table" },
+      { title: "Tabs",         href: "/docs/components/tabs" },
+      { title: "TagInput",     href: "/docs/components/taginput" },
+      { title: "Timeline",     href: "/docs/components/timeline" },
+      { title: "Toast",        href: "/docs/components/toast" },
+      { title: "Toggle",       href: "/docs/components/toggle" },
+      { title: "Tooltip",      href: "/docs/components/tooltip" },
+    ],
+  },
+];
+
+export const COMPONENT_SLUGS = DOCS_NAV[1]!.items.map(i => i.href.split("/").pop()!);
